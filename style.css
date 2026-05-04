@@ -421,23 +421,172 @@ footer {
 }
 
 /* ===== Responsive ===== */
-@media (max-width: 700px) {
-  header h1 { font-size: 1.5rem; }
 
+/* ── Tablette (≤ 900px) ── */
+@media (max-width: 900px) {
+  .table-container { padding: 1rem 1rem; }
+
+  #booksTable th,
+  #booksTable td { padding: 0.75rem 0.8rem; }
+
+  /* Masquer les colonnes secondaires */
+  #booksTable th:nth-child(6),
+  #booksTable td:nth-child(6) { display: none; } /* Prix */
+}
+
+/* ── Mobile (≤ 600px) ── */
+@media (max-width: 600px) {
+
+  /* Header */
+  header { padding: 1.5rem 1rem 1.2rem; }
+  header h1 { font-size: 1.4rem; }
+  header p  { font-size: 0.85rem; }
+
+  /* Toolbar : empilé, bouton pleine largeur */
   .toolbar {
-    padding: 1rem;
+    padding: 0.85rem 1rem;
     flex-direction: column;
     align-items: stretch;
+    gap: 0.75rem;
+  }
+  .search-wrapper { max-width: 100%; }
+  .toolbar .btn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
   }
 
-  .search-wrapper { max-width: 100%; }
+  /* Stats bar */
+  .stats-bar { padding: 0.5rem 1rem; font-size: 0.8rem; }
 
-  .table-container { padding: 1rem; }
+  /* Table → vue carte */
+  .table-container {
+    padding: 0.75rem;
+    overflow-x: unset;
+  }
 
-  #booksTable th:nth-child(2),
-  #booksTable td:nth-child(2) { display: none; }
+  #booksTable { display: block; box-shadow: none; background: transparent; }
 
-  .modal { padding: 1.5rem; }
+  /* Masquer le thead */
+  #booksTable thead { display: none; }
 
-  .modal-book-detail { flex-direction: column; align-items: center; }
+  /* Chaque ligne devient une carte */
+  #booksTable tbody { display: flex; flex-direction: column; gap: 0.75rem; }
+
+  #booksTable tbody tr {
+    display: grid;
+    grid-template-columns: 52px 1fr auto;
+    grid-template-rows: auto auto auto;
+    column-gap: 0.85rem;
+    row-gap: 0.15rem;
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 0.85rem 1rem;
+    box-shadow: var(--shadow);
+    border-bottom: none;
+  }
+  #booksTable tbody tr:hover { background: var(--white); }
+
+  /* Colonne # : masquée, la couverture prend la 1ère colonne */
+  #booksTable td:nth-child(1) { display: none; }
+
+  /* Couverture : lignes 1-3, col 1 */
+  #booksTable td:nth-child(2) {
+    display: block;
+    grid-row: 1 / 4; grid-column: 1;
+    padding: 0;
+    align-self: center;
+  }
+  #booksTable td:nth-child(2) .book-cover-thumb {
+    width: 52px;
+    height: 70px;
+  }
+  #booksTable td:nth-child(2) .cover-placeholder {
+    width: 52px;
+    height: 70px;
+    font-size: 1.3rem;
+  }
+
+  /* Titre : ligne 1, col 2 */
+  #booksTable td:nth-child(3) {
+    grid-row: 1; grid-column: 2;
+    padding: 0;
+    font-size: 0.95rem;
+    align-self: end;
+  }
+
+  /* Auteur : ligne 2, col 2 */
+  #booksTable td:nth-child(4) {
+    grid-row: 2; grid-column: 2;
+    padding: 0;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+
+  /* Année : ligne 3, col 2 */
+  #booksTable td:nth-child(5) {
+    grid-row: 3; grid-column: 2;
+    padding: 0;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    align-self: start;
+  }
+
+  /* Prix : masqué */
+  #booksTable td:nth-child(6) { display: none; }
+
+  /* Actions : lignes 1-2, col 3 */
+  #booksTable td:nth-child(7) {
+    grid-row: 1 / 3; grid-column: 3;
+    padding: 0;
+    align-self: center;
+  }
+  .actions-cell { flex-direction: column; gap: 0.4rem; }
+  .btn-icon { padding: 0.5rem 0.65rem; }
+
+  /* Modals : plein écran sur mobile */
+  .modal-overlay { padding: 0; align-items: flex-end; }
+  .modal {
+    max-width: 100%;
+    width: 100%;
+    border-radius: var(--radius) var(--radius) 0 0;
+    padding: 1.5rem 1.25rem 2rem;
+    max-height: 90dvh;
+    overflow-y: auto;
+  }
+  .modal-small {
+    max-width: 100%;
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+
+  /* Détails livre : empilé */
+  .modal-book-detail {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .detail-cover { width: 90px; height: 120px; }
+
+  /* Form actions : pleine largeur */
+  .form-actions {
+    flex-direction: column-reverse;
+    gap: 0.6rem;
+  }
+  .form-actions .btn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.75rem;
+  }
+
+  /* Toast */
+  .toast {
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    max-width: unset;
+    text-align: center;
+  }
+
+  footer { font-size: 0.78rem; padding: 1rem; }
 }
