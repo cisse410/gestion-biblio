@@ -62,8 +62,7 @@ function renderTable(list) {
   tbody.innerHTML = '';
 
   if (list.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" class="empty-cell"><i class="fa-solid fa-inbox"></i> Aucun livre trouvé.</td></tr>';
-    updateCount(0);
+    tbody.innerHTML = '<tr><td colspan="5" class="empty-cell">Aucun livre trouvé.</td></tr>';
     return;
   }
 
@@ -74,35 +73,21 @@ function renderTable(list) {
     tbody.appendChild(row);
   });
 
-  updateCount(list.length);
 }
 
 function buildRow(book, displayNum, globalIdx) {
-  const coverHtml = book.cover
-    ? `<img src="${escapeHtml(book.cover)}" alt="couverture" class="book-cover-thumb"
-           onerror="this.outerHTML='<div class=\'cover-placeholder\'><i class=\'fa-solid fa-book\'></i></div>'" />`
-    : `<div class="cover-placeholder"><i class="fa-solid fa-book"></i></div>`;
-
   return `
-    <td><span class="row-num">${displayNum}</span></td>
-    <td>${coverHtml}</td>
     <td><strong>${escapeHtml(book.title)}</strong></td>
     <td>${escapeHtml(book.author)}</td>
     <td>${escapeHtml(book.year)}</td>
     <td>${escapeHtml(book.price)}</td>
     <td>
       <div class="actions-cell">
-        <button class="btn btn-primary btn-icon" title="Détails" onclick="openDetailModal(${globalIdx})"><i class="fa-solid fa-eye"></i></button>
-        <button class="btn btn-secondary btn-icon" title="Modifier" onclick="openEditModal(${globalIdx})"><i class="fa-solid fa-pen"></i></button>
-        <button class="btn btn-danger btn-icon" title="Supprimer" onclick="openDeleteModal(${globalIdx})"><i class="fa-solid fa-trash"></i></button>
+        <button class="btn btn-view" title="Détails" onclick="openDetailModal(${globalIdx})">Voir</button>
+        <button class="btn btn-edit" title="Modifier" onclick="openEditModal(${globalIdx})">Modifier</button>
+        <button class="btn btn-delete" title="Supprimer" onclick="openDeleteModal(${globalIdx})">Supprimer</button>
       </div>
     </td>`;
-}
-
-function updateCount(n) {
-  document.getElementById('bookCount').textContent =
-    n === 0 ? 'Aucun livre dans la bibliothèque'
-            : n + ' livre' + (n > 1 ? 's' : '') + ' dans la bibliothèque';
 }
 
 // ─── Recherche / filtre ──────────────────────────────────────────────────────
@@ -136,17 +121,25 @@ function openDetailModal(idx) {
 
 // ─── Modal Ajout ─────────────────────────────────────────────────────────────
 function openAddModal() {
-  document.getElementById('formModalTitle').textContent = 'Ajouter un livre';
+  document.getElementById('formTitle').textContent = 'Ajouter un livre';
   document.getElementById('formSubmitBtn').textContent  = 'Ajouter';
   document.getElementById('editIndex').value = '-1';
+  document.getElementById('cancelBtn').style.display = 'none';
   document.getElementById('bookForm').reset();
-  openModal('formModal');
+  
+  // Sur mobile, ouvrir la section en overlay
+  const section = document.querySelector('.add-book-section');
+  if (window.innerWidth <= 600) {
+    section.classList.add('open');
+  } else {
+    section.scrollIntoView({ behavior: 'smooth' });
+  }
 }
 
 // ─── Modal Modification ───────────────────────────────────────────────────────
 function openEditModal(idx) {
   const book = books[idx];
-  document.getElementById('formModalTitle').textContent = 'Modifier le livre';
+  document.getElementById('formTitle').textContent = 'Modifier le livre';
   document.getElementById('formSubmitBtn').textContent  = 'Enregistrer';
   document.getElementById('editIndex').value  = idx;
   document.getElementById('inputTitle').value  = book.title;
@@ -154,7 +147,30 @@ function openEditModal(idx) {
   document.getElementById('inputYear').value   = book.year;
   document.getElementById('inputPrice').value  = book.price;
   document.getElementById('inputCover').value  = book.cover;
-  openModal('formModal');
+  document.getElementById('cancelBtn').style.display = 'block';
+  
+  // Sur mobile, ouvrir la section en overlay
+  const section = document.querySelector('.add-book-section');
+  if (window.innerWidth <= 600) {
+    section.classList.add('open');
+  } else {
+    section.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
+// ─── Réinitialiser le formulaire ──────────────────────────────────────────────
+function resetForm() {
+  document.getElementById('formTitle').textContent = 'Ajouter un livre';
+  document.getElementById('formSubmitBtn').textContent  = 'Ajouter';
+  document.getElementById('editIndex').value = '-1';
+  document.getElementById('cancelBtn').style.display = 'none';
+  document.getElementById('bookForm').reset();
+  
+  // Fermer la section sur mobile
+  const section = document.querySelector('.add-book-section');
+  if (window.innerWidth <= 600) {
+    section.classList.remove('open');
+  }
 }
 
 // ─── Soumission formulaire (ajout ou modification) ───────────────────────────
@@ -178,7 +194,11 @@ function submitBookForm(e) {
     showToast('Livre modifié avec succès !', 'success');
   }
 
-  closeModal('formModal');
+  // Fermer le formulaire et le re-render
+  if (window.innerWidth <= 600) {
+    document.querySelector('.add-book-section').classList.remove('open');
+  }
+  resetForm();
   renderTable(getFilteredBooks());
 }
 
@@ -231,7 +251,7 @@ function escapeHtml(str) {
 
 function showError(msg) {
   const tbody = document.getElementById('booksBody');
-  tbody.innerHTML = `<tr><td colspan="7" class="loading-cell" style="color:#ef4444;">⚠️ ${escapeHtml(msg)}</td></tr>`;
+  tbody.innerHTML = `<tr><td colspan="5" class="loading-cell" style="color:#ef4444;">⚠️ ${escapeHtml(msg)}</td></tr>`;
 }
 
 // ─── Toast ────────────────────────────────────────────────────────────────────
